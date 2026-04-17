@@ -3,6 +3,7 @@
 *::before {
   padding: 0;
   margin: 0;
+  box-sizing: border-box;
 }
 
 .app-container {
@@ -14,9 +15,9 @@
   background: #000;
 }
 
-.seesaw-container {
-  width: 60%;
-  height: 60%;
+#seesaw-container {
+  width: fit-content;
+  height: 40%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,17 +25,20 @@
   position: relative;
 }
 
-.seesaw {
+#seesaw {
   width: 400px;
   height: 20px;
   background-color: black;
   z-index: 1;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.seesaw-container:hover {
-  .preview-weight {
-    display: block;
+#seesaw-container:hover {
+  #preview-weight {
+    display: flex;
   }
 }
 
@@ -48,11 +52,48 @@
   top: 50%;
 }
 
-.preview-weight {
-  background-color: green;
+#preview-weight {
   width: 30px;
   height: 30px;
   position: absolute;
   display: none;
-  /* left: 10%; */
+  top: -500%;
+  pointer-events: none;
+  user-select: none;
+  z-index: 99;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  border-radius: 100%;
+}
+
+#preview-weight::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 50%;
+  border-right: 2px blueviolet dashed;
+  width: 100%;
+  height: 50px;
+  pointer-events: none;
+  user-select: none;
+}
+
+@keyframes falldown {
+  0% {
+    transform: translateY(-100px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.weight {
+  position: absolute;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  animation: falldown 1s ease-in-out forwards;
 }
