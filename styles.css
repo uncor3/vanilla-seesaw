@@ -1,0 +1,58 @@
+*,
+*::after,
+*::before {
+  padding: 0;
+  margin: 0;
+}
+
+.app-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.seesaw-container {
+  width: 60%;
+  height: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: red;
+  position: relative;
+}
+
+.seesaw {
+  width: 400px;
+  height: 20px;
+  background-color: black;
+  z-index: 1;
+  position: relative;
+}
+
+.seesaw-container:hover {
+  .preview-weight {
+    display: block;
+  }
+}
+
+.pivot {
+  position: absolute;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 30px solid #f7fbff;
+  z-index: 0;
+  left: 50%;
+  top: 50%;
+}
+
+.preview-weight {
+  background-color: green;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  display: none;
+  /* left: 10%; */
+}
