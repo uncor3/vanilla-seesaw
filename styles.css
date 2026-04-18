@@ -113,6 +113,7 @@
   width: 400px;
   margin-bottom: 15px;
   position: relative;
+  z-index: 98;
 }
 
 .rule-point {
