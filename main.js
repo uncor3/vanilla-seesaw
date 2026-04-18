@@ -188,7 +188,7 @@ seesaw_container.addEventListener('mousemove', (e) => {
   const distance = Math.min(Math.abs(x - center), SEESAW_MAX_DISTANCE);
   const side = x > center ? 1 : -1;
 
-  const { width: weight_width } = getWeightSize(weight_to_add);
+  const { width: weight_width } = getWeightSizes(weight_to_add);
 
   // clamp so the weight stays on seesaw
   // also center the weight
@@ -204,9 +204,15 @@ seesaw_container.addEventListener('mousemove', (e) => {
   last_left = left;
 });
 
+function getWeightSizes(weight) {
+  return {
+    width: Math.max(weight * MULTIPLIER * BASE_WIDTH, 25),
+    height: Math.max(weight * MULTIPLIER * BASE_HEIGHT, 25),
+  };
+}
+
 function computeStyles(weight, left) {
-  const width = Math.max(weight * MULTIPLIER * BASE_WIDTH, 25);
-  const height = Math.max(weight * MULTIPLIER * BASE_HEIGHT, 25);
+  const { width, height } = getWeightSizes(weight);
 
   const style = `left:${left}px; width: ${width}px; height: ${height}px; background-color: ${color};`;
   return style;
@@ -219,20 +225,13 @@ function nextWeight() {
   preview_weight.textContent = text;
   next_weight_val.textContent = text;
 
-  const { width, height } = getWeightSize(weight_to_add);
+  const { width, height } = getWeightSizes(weight_to_add);
   preview_weight.style.width = `${width}px`;
   preview_weight.style.height = `${height}px`;
   color = COLORS[Math.floor(Math.random() * COLORS.length)];
   preview_weight.style.backgroundColor = color;
 
   return random;
-}
-
-function getWeightSize(weight) {
-  return {
-    width: Math.max(weight * MULTIPLIER * BASE_WIDTH, 25),
-    height: Math.max(weight * MULTIPLIER * BASE_HEIGHT, 25),
-  };
 }
 
 seesaw_container.addEventListener('click', (e) => {
