@@ -106,31 +106,38 @@
 }
 
 #ruler {
-  position: absolute;
-
-  bottom: 55%;
   opacity: 0;
-  gap: 1rem;
-  align-items: end;
+  gap: 19px;
   display: flex;
-  justify-content: center;
+  align-items: end;
   width: 400px;
+  margin-bottom: 15px;
+  position: relative;
 }
 
 .rule-point {
   flex: 1;
   background-color: royalblue;
-  width: 1px;
   height: 10px;
+  position: relative;
+}
+
+/* center */
+.rule-point.center {
+  background-color: cadetblue;
+  height: 25px;
+}
+
+.rule-point::after {
+  content: attr(data-distance);
+  color: blueviolet;
+  position: absolute;
+  top: -2rem;
+  left: 0;
+  transform: translate(-50%, -50%);
 }
 
 #ruler > .rule-point:first-child,
 #ruler > .rule-point:last-child {
-  height: 25px;
-  width: 2px;
-}
-
-.rule-point.center {
-  width: 2px;
   height: 25px;
 }

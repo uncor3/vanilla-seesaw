@@ -152,17 +152,16 @@ nextWeight();
 
 function handleRuler() {
   const rulerWidth = ruler.scrollWidth;
-  const pointCount = rulerWidth / 20;
 
-  console.log({ pointCount });
+  // +1 required for center
+  const pointCount = Math.floor(rulerWidth / 20) + 1;
+  const center = Math.floor(pointCount / 2);
 
   for (let i = 0; i < pointCount; i++) {
-    console.log('adding');
-
     const elm = document.createElement('div');
     elm.className = 'rule-point';
-    /* center */
-    if (i == 10) elm.classList.add('center');
+    elm.setAttribute('data-distance', Math.abs(i - center));
+    if (i == center) elm.classList.add('center');
     ruler.appendChild(elm);
   }
 }
