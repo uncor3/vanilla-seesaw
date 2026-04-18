@@ -1,15 +1,24 @@
 const BASE_WIDTH = 7.5;
 const BASE_HEIGHT = 7.5;
 const MULTIPLIER = 1.1;
-const COLORS = ['green', 'yellow', 'cyan', 'magenta'];
+const COLORS = [
+  '#4ade80',
+  '#facc15',
+  '#22d3ee',
+  '#f472b6',
+  '#818cf8',
+  '#fb923c',
+];
 const WEIGHT_FORMAT = 'kg';
 
 let color = COLORS[0];
+let resetting = false;
 
 const preview_weight = document.getElementById('preview-weight');
 const seesaw_container = document.getElementById('seesaw-container');
 const seesaw = document.getElementById('seesaw');
 const ruler = document.getElementById('ruler');
+const reset_btn = document.getElementById('reset-btn');
 
 function createWeight(weight, style) {
   const div = document.createElement('div');
@@ -56,6 +65,19 @@ class App {
 
   getAngle() {
     return this.angle;
+  }
+
+  reset() {
+    resetting = true;
+    for (const w of this.weights) {
+      seesaw.removeChild(w.elm);
+    }
+
+    seesaw.style.transform = '';
+    this.angle = 0;
+    this.weights = [];
+
+    resetting = false;
   }
 }
 
@@ -119,6 +141,7 @@ function getWeightSize(weight) {
 }
 
 seesaw_container.addEventListener('click', (e) => {
+  if (resetting) return;
   preview_weight.style.opacity = 0;
   const rect = seesaw.getBoundingClientRect();
   const x = e.clientX - rect.left;
@@ -167,3 +190,7 @@ function handleRuler() {
 }
 
 handleRuler();
+
+reset_btn.addEventListener('click', () => {
+  app.reset();
+});
