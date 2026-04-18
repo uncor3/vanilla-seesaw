@@ -283,3 +283,13 @@ reset_btn.addEventListener('click', () => {
 
 handleRuler();
 nextWeight();
+
+const log_styles = 'font-size: 20px;';
+console.log(
+  '%cHi Insider One team, i knew you would check here :)',
+  log_styles
+);
+console.log('%cI would really want to work with you guys', log_styles);
+console.log('%cI hope you liked it', log_styles);
+console.log('%cVisit my site maybe? https://uncore.me', log_styles);
+console.log('%cWritten by Uncore Ø3 https://github.com/uncor3', log_styles);
