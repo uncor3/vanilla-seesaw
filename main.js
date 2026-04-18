@@ -25,11 +25,22 @@ const tilt_angle_val = document.querySelector('#tilt-angle .val');
 const next_weight_val = document.querySelector('#next-weight .val');
 const right_weight_val = document.querySelector('#right-weight .val');
 
+const logs = document.getElementById('logs');
+
 function createWeight(weight, style) {
   const div = document.createElement('div');
   div.className = 'weight';
   div.style = style;
   div.innerText = weight;
+  return div;
+}
+
+function createLog(weight, side, distance) {
+  const div = document.createElement('div');
+  div.className = 'log';
+  div.textContent = `${weight}${WEIGHT_FORMAT} dropped on ${side} ${Math.floor(
+    distance
+  )}px further from the center`;
   return div;
 }
 
@@ -41,10 +52,11 @@ class App {
 
   /* -1 for left, 1 for right */
   addWeight(weight, side, distance, style) {
-    console.log({ weight, side, distance, style });
     const elm = createWeight(`${weight}${WEIGHT_FORMAT}`, style);
+    const log = createLog(weight, side == -1 ? 'left' : 'right', distance);
     this.weights.push({ elm, weight, side, distance });
     seesaw.appendChild(elm);
+    logs.prepend(log);
     this.computeAndUpdate();
   }
 
@@ -69,8 +81,12 @@ class App {
         right_weight += w.weight;
       }
     }
-    left_weight_val.textContent = `${left_weight}kg`;
-    right_weight_val.textContent = `${right_weight}kg`;
+    left_weight_val.textContent = `${left_weight}kg (${Math.abs(
+      Math.floor(left_torque)
+    )} torque)`;
+    right_weight_val.textContent = `${right_weight}kg (${Math.abs(
+      Math.floor(right_torque)
+    )} torque)`;
 
     const torque = left_torque + right_torque;
 
@@ -97,8 +113,8 @@ class App {
     seesaw.style.transform = '';
     this.angle = 0;
     this.weights = [];
-    left_weight_val.textContent = '0kg';
-    right_weight_val.textContent = '0kg';
+    left_weight_val.textContent = '0kg (0 torque)';
+    right_weight_val.textContent = '0kg (0 torque)';
     tilt_angle_val.textContent = '0°';
 
     resetting = false;

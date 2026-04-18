@@ -7,34 +7,38 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="app-container">
-      <div class="stats">
-        <div class="stat" id="left-weight">
-          <div class="title">Left Weight</div>
-          <div class="val">0kg</div>
+    <div class="container">
+      <div class="app-container">
+        <div class="stats">
+          <div class="stat torque" id="left-weight">
+            <div class="title">Left Weight</div>
+            <div class="val">0kg (0 torque)</div>
+          </div>
+          <div class="stat" id="tilt-angle">
+            <div class="title">Tilt Angle</div>
+            <div class="val">0°</div>
+          </div>
+          <div class="stat" id="next-weight">
+            <div class="title">Next Weight</div>
+            <div class="val">0kg</div>
+          </div>
+          <div class="stat torque" id="right-weight">
+            <div class="title">Right Weight</div>
+            <div class="val">0kg (0 torque)</div>
+          </div>
         </div>
-        <div class="stat" id="tilt-angle">
-          <div class="title">Tilt Angle</div>
-          <div class="val">0°</div>
+        <div id="seesaw-container">
+          <div id="seesaw">
+            <div id="ruler"></div>
+            <div id="preview-weight"></div>
+          </div>
+          <div class="pivot"></div>
         </div>
-        <div class="stat" id="next-weight">
-          <div class="title">Next Weight</div>
-          <div class="val">0kg</div>
-        </div>
-        <div class="stat" id="right-weight">
-          <div class="title">Right Weight</div>
-          <div class="val">0kg</div>
-        </div>
+        <button id="reset-btn">Reset</button>
+        <div id="logs"></div>
       </div>
-      <div id="seesaw-container">
-        <div id="seesaw">
-          <div id="ruler"></div>
-          <div id="preview-weight"></div>
-        </div>
-        <div class="pivot"></div>
-      </div>
-      <button id="reset-btn">Reset</button>
     </div>
+
     <script src="./main.js"></script>
   </body>
 </html>
