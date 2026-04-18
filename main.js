@@ -64,6 +64,8 @@ let clickable = false;
 const app = new App();
 
 seesaw_container.addEventListener('mousemove', (e) => {
+  preview_weight.style.opacity = 1;
+
   const rect = seesaw.getBoundingClientRect();
   // subtract div's left rect from
   // clientX cursor position to get
@@ -117,6 +119,7 @@ function getWeightSize(weight) {
 }
 
 seesaw_container.addEventListener('click', (e) => {
+  preview_weight.style.opacity = 0;
   const rect = seesaw.getBoundingClientRect();
   const x = e.clientX - rect.left;
 
