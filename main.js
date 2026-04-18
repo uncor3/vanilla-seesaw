@@ -27,6 +27,10 @@ const tilt_angle_val = document.querySelector('#tilt-angle .val');
 const next_weight_val = document.querySelector('#next-weight .val');
 const right_weight_val = document.querySelector('#right-weight .val');
 
+const sfx = document.getElementById('sfx');
+const sfx_toggle = document.getElementById('sfx-toggle');
+sfx.volume = 0.1;
+
 const logs = document.getElementById('logs');
 
 function createWeight(weight, style) {
@@ -185,6 +189,10 @@ function getWeightSize(weight) {
 
 seesaw_container.addEventListener('click', (e) => {
   if (resetting) return;
+  if (sfx_toggle.checked) {
+    sfx.currentTime = 0;
+    sfx.play();
+  }
   preview_weight.style.opacity = 0;
   const rect = seesaw.getBoundingClientRect();
   const x = e.clientX - rect.left;

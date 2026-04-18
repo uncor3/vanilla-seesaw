@@ -161,8 +161,12 @@
   height: 25px;
 }
 
-#reset-btn {
+.options {
   margin-top: 1rem;
+}
+
+#reset-btn {
+  margin-left: 1rem;
   height: 3rem;
   align-items: center;
   justify-content: center;
@@ -249,4 +253,8 @@
   background: rgb(211, 211, 211);
   border-radius: 0.2rem;
   animation: enter 0.35s ease-in-out forwards;
+}
+
+#sfx {
+  display: none;
 }

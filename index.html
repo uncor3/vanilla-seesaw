@@ -34,11 +34,16 @@
           </div>
           <div class="pivot"></div>
         </div>
-        <button id="reset-btn">Reset</button>
+        <div class="options">
+          <input type="checkbox" name="sfx" id="sfx-toggle" checked />
+          <label for="sfx-toggle">Sound Effects</label>
+          <button id="reset-btn">Reset</button>
+        </div>
         <div id="logs"></div>
       </div>
     </div>
 
+    <audio id="sfx" src="beep.mp3"></audio>
     <script src="./main.js"></script>
   </body>
 </html>
