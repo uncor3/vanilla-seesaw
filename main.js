@@ -44,6 +44,10 @@ function createLog(weight, side, distance) {
   return div;
 }
 
+function clearLogs() {
+  logs.innerHTML = '';
+}
+
 class App {
   constructor() {
     this.weights = [];
@@ -234,4 +238,5 @@ handleRuler();
 
 reset_btn.addEventListener('click', () => {
   app.reset();
+  clearLogs();
 });
