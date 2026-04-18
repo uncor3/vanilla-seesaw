@@ -20,6 +20,11 @@ const seesaw = document.getElementById('seesaw');
 const ruler = document.getElementById('ruler');
 const reset_btn = document.getElementById('reset-btn');
 
+const left_weight_val = document.querySelector('#left-weight .val');
+const tilt_angle_val = document.querySelector('#tilt-angle .val');
+const next_weight_val = document.querySelector('#next-weight .val');
+const right_weight_val = document.querySelector('#right-weight .val');
+
 function createWeight(weight, style) {
   const div = document.createElement('div');
   div.className = 'weight';
@@ -44,23 +49,39 @@ class App {
   }
 
   computeAndUpdate() {
-    let torque = 0;
+    let left_torque = 0;
+    let left_weight = 0;
+
+    let right_torque = 0;
+    let right_weight = 0;
 
     for (const w of this.weights) {
-      /* the formula : torque = weight * distance */
-      torque += w.weight * w.distance * w.side;
-      console.log(w);
+      // left
+      if (w.side == -1) {
+        /* the formula : torque = weight * distance */
+        left_torque += w.weight * w.distance * w.side;
+        left_weight += w.weight;
+      }
+      //   right
+      else {
+        /* the formula : torque = weight * distance */
+        right_torque += w.weight * w.distance * w.side;
+        right_weight += w.weight;
+      }
     }
+    left_weight_val.textContent = `${left_weight}kg`;
+    right_weight_val.textContent = `${right_weight}kg`;
+
+    const torque = left_torque + right_torque;
 
     this.angle = torque * 0.06;
 
-    console.log(this.angle);
-
     /* capped at ±30 deg as requested in the pdf */
-    seesaw.style.transform = `rotate(${Math.max(
-      -30,
-      Math.min(this.angle, 30)
-    )}deg)`;
+    const cappedAngle = Math.max(-30, Math.min(this.angle, 30));
+
+    seesaw.style.transform = `rotate(${cappedAngle}deg)`;
+
+    tilt_angle_val.textContent = `${Math.floor(cappedAngle)}°`;
   }
 
   getAngle() {
@@ -76,6 +97,9 @@ class App {
     seesaw.style.transform = '';
     this.angle = 0;
     this.weights = [];
+    left_weight_val.textContent = '0kg';
+    right_weight_val.textContent = '0kg';
+    tilt_angle_val.textContent = '0°';
 
     resetting = false;
   }
@@ -123,6 +147,7 @@ function nextWeight() {
   weight_to_add = random;
   const text = `${random}${WEIGHT_FORMAT}`;
   preview_weight.textContent = text;
+  next_weight_val.textContent = text;
 
   const { width, height } = getWeightSize(weight_to_add);
   preview_weight.style.width = `${width}px`;
