@@ -16,10 +16,6 @@ const DEFAULT_APP_STATE = {
   weights: [],
 };
 
-let color = COLORS[0];
-let resetting = false;
-let weight_to_add = 0;
-
 const preview_weight = document.getElementById('preview-weight');
 const seesaw_container = document.getElementById('seesaw-container');
 const seesaw = document.getElementById('seesaw');
@@ -34,12 +30,18 @@ const right_weight_val = document.querySelector('#right-weight .val');
 const sfx = document.getElementById('sfx');
 const sfx_toggle = document.getElementById('sfx-toggle');
 sfx.volume = 0.1;
-
 const logs = document.getElementById('logs');
+
+let color = COLORS[0];
+let resetting = false;
+let weight_to_add = 0;
+let last_distance = 0;
+let last_side = 1; // 1 for right, -1 for left
+let last_left = 0;
 
 function parseState() {
   const state = localStorage.getItem(CACHE_KEY);
-  if (!state) return DEFAULT_APP_STATE;
+  if (!state || !state.length) return DEFAULT_APP_STATE;
 
   try {
     const data = JSON.parse(state);
@@ -51,6 +53,7 @@ function parseState() {
   } catch (error) {
     return DEFAULT_APP_STATE;
   }
+  return DEFAULT_APP_STATE;
 }
 
 function createWeight(weight, style) {
@@ -78,6 +81,13 @@ class App {
   constructor() {
     this.weights = [];
     this.angle = 0;
+
+    this.left_torque = 0;
+    this.left_weight = 0;
+
+    this.right_torque = 0;
+    this.right_weight = 0;
+
     const prevState = parseState();
 
     // if we had anything before
@@ -92,41 +102,55 @@ class App {
   addWeight(weight, side, distance, style) {
     const elm = createWeight(`${weight}${WEIGHT_FORMAT}`, style);
     const log = createLog(weight, side == -1 ? 'left' : 'right', distance);
-    this.weights.push({ weight, side, distance, style });
+    const w = { weight, side, distance, style };
+    this.weights.push(w);
     seesaw.appendChild(elm);
     logs.prepend(log);
-    this.computeAndUpdate();
+    this.computeAndUpdate(w);
   }
 
-  computeAndUpdate() {
-    let left_torque = 0;
-    let left_weight = 0;
-
-    let right_torque = 0;
-    let right_weight = 0;
-
-    for (const w of this.weights) {
-      // left
-      if (w.side == -1) {
-        /* the formula : torque = weight * distance */
-        left_torque += w.weight * w.distance * w.side;
-        left_weight += w.weight;
-      }
-      //   right
-      else {
-        /* the formula : torque = weight * distance */
-        right_torque += w.weight * w.distance * w.side;
-        right_weight += w.weight;
-      }
+  computeAndUpdate(w) {
+    // left
+    if (w.side == -1) {
+      /* the formula : torque = weight * distance */
+      this.left_torque += w.weight * w.distance * w.side;
+      this.left_weight += w.weight;
     }
-    left_weight_val.textContent = `${left_weight}kg (${Math.abs(
-      Math.floor(left_torque)
+    //   right
+    else {
+      /* the formula : torque = weight * distance */
+      this.right_torque += w.weight * w.distance * w.side;
+      this.right_weight += w.weight;
+    }
+    this.updateUI();
+    this.serialize();
+  }
+
+  reset() {
+    resetting = true;
+    seesaw.querySelectorAll('.weight').forEach((el) => el.remove());
+    seesaw.style.transform = '';
+    this.angle = 0;
+    this.weights = [];
+    this.left_torque = 0;
+    this.left_weight = 0;
+    this.right_torque = 0;
+    this.right_weight = 0;
+    this.updateUI();
+    localStorage.removeItem(CACHE_KEY);
+
+    resetting = false;
+  }
+
+  updateUI() {
+    left_weight_val.textContent = `${this.left_weight}kg (${Math.abs(
+      Math.floor(this.left_torque)
     )} torque)`;
-    right_weight_val.textContent = `${right_weight}kg (${Math.abs(
-      Math.floor(right_torque)
+    right_weight_val.textContent = `${this.right_weight}kg (${Math.abs(
+      Math.floor(this.right_torque)
     )} torque)`;
 
-    const torque = left_torque + right_torque;
+    const torque = this.left_torque + this.right_torque;
 
     this.angle = torque * 0.06;
 
@@ -136,27 +160,6 @@ class App {
     seesaw.style.transform = `rotate(${cappedAngle}deg)`;
 
     tilt_angle_val.textContent = `${Math.floor(cappedAngle)}°`;
-
-    this.serialize();
-  }
-
-  getAngle() {
-    return this.angle;
-  }
-
-  reset() {
-    resetting = true;
-    seesaw.querySelectorAll('.weight').forEach((el) => el.remove());
-    seesaw.style.transform = '';
-    this.angle = 0;
-    this.weights = [];
-    left_weight_val.textContent = '0kg (0 torque)';
-    right_weight_val.textContent = '0kg (0 torque)';
-    tilt_angle_val.textContent = '0°';
-
-    localStorage.removeItem(CACHE_KEY);
-
-    resetting = false;
   }
 
   serialize() {
@@ -179,25 +182,33 @@ seesaw_container.addEventListener('mousemove', (e) => {
   // cursor's distance to the left side of container
   const x = e.clientX - rect.left;
 
-  // dont let it overflow the seesaw completely
-  // also align in the center
-  if (
-    (x < preview_weight.offsetWidth / 2) |
-    (x > seesaw.offsetWidth + preview_weight.offsetWidth / 2)
-  ) {
-    return;
-  }
+  // using seesaw.offsetWidth instead of rect.width
+  // because of applied transform to seesaw
+  const center = seesaw.offsetWidth / 2;
+  const distance = Math.min(Math.abs(x - center), SEESAW_MAX_DISTANCE);
+  const side = x > center ? 1 : -1;
 
-  // subtract element's width from X diff and set it as style
-  preview_weight.style.left = `${x - preview_weight.offsetWidth}px`;
+  const { width: weight_width } = getWeightSize(weight_to_add);
+
+  // clamp so the weight stays on seesaw
+  // also center the weight
+  const left = Math.max(
+    -(weight_width / 2),
+    Math.min(x - weight_width / 2, seesaw.offsetWidth - weight_width / 2)
+  );
+
+  preview_weight.style.left = `${left}px`;
+
+  last_distance = distance;
+  last_side = side;
+  last_left = left;
 });
 
-function computeStyles(weight, offset) {
+function computeStyles(weight, left) {
   const width = Math.max(weight * MULTIPLIER * BASE_WIDTH, 25);
   const height = Math.max(weight * MULTIPLIER * BASE_HEIGHT, 25);
 
-  const style = `left:${offset}px; width: ${width}px; height: ${height}px; background-color: ${color};`;
-
+  const style = `left:${left}px; width: ${width}px; height: ${height}px; background-color: ${color};`;
   return style;
 }
 
@@ -231,31 +242,12 @@ seesaw_container.addEventListener('click', (e) => {
     sfx.play();
   }
   preview_weight.style.opacity = 0;
-  const rect = seesaw.getBoundingClientRect();
-  const x = e.clientX - rect.left;
 
-  const center = rect.width / 2;
-  // cap it at SEESAW_MAX_DISTANCE because
-  // it can be bigger than the
-  // width of the seesaw
-  const distance = Math.min(Math.abs(x - center), SEESAW_MAX_DISTANCE);
-  /* if the weight was dropped further from the center, 
-    it is on the right side*/
-  const side = x > center ? 1 : -1;
-  const { width: weight_width } = getWeightSize(weight_to_add);
-
-  // make sure that weight doesn't overflow the seesaw
-  // center it to the begining as min
-  // or center it at the very end as max
-  const left = Math.max(
-    -(weight_width / 2),
-    Math.min(x - weight_width / 2, seesaw.offsetWidth - weight_width / 2)
-  );
   app.addWeight(
     weight_to_add,
-    side,
-    distance,
-    computeStyles(weight_to_add, left)
+    last_side,
+    last_distance,
+    computeStyles(weight_to_add, last_left)
   );
   nextWeight();
 });
