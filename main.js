@@ -84,7 +84,6 @@ seesaw_container.addEventListener('mousemove', (e) => {
 });
 
 function computeStyles(weight, offset) {
-  color = COLORS[Math.floor(Math.random() * COLORS.length)];
   const width = Math.max(weight * MULTIPLIER * BASE_WIDTH, 25);
   const height = Math.max(weight * MULTIPLIER * BASE_HEIGHT, 25);
 
@@ -101,8 +100,12 @@ function nextWeight() {
   const text = `${random}${WEIGHT_FORMAT}`;
   preview_weight.textContent = text;
 
-  const prevLeft = preview_weight.style.left || 0;
-  preview_weight.style = computeStyles(random, prevLeft);
+  const { width, height } = getWeightSize(weight_to_add);
+  preview_weight.style.width = `${width}px`;
+  preview_weight.style.height = `${height}px`;
+  color = COLORS[Math.floor(Math.random() * COLORS.length)];
+  preview_weight.style.backgroundColor = color;
+
   return random;
 }
 
