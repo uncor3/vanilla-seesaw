@@ -10,9 +10,11 @@ const COLORS = [
   '#fb923c',
 ];
 const WEIGHT_FORMAT = 'kg';
+const SEESAW_MAX_DISTANCE = 200;
 
 let color = COLORS[0];
 let resetting = false;
+let weight_to_add = 0;
 
 const preview_weight = document.getElementById('preview-weight');
 const seesaw_container = document.getElementById('seesaw-container');
@@ -125,8 +127,6 @@ class App {
   }
 }
 
-let clickable = false;
-
 const app = new App();
 
 seesaw_container.addEventListener('mousemove', (e) => {
@@ -160,8 +160,6 @@ function computeStyles(weight, offset) {
   return style;
 }
 
-let weight_to_add = 0;
-
 function nextWeight() {
   const random = Math.max(Math.floor(Math.random() * 10), 1);
   weight_to_add = random;
@@ -192,9 +190,10 @@ seesaw_container.addEventListener('click', (e) => {
   const x = e.clientX - rect.left;
 
   const center = rect.width / 2;
-  // cap it 200 at because it can bigger than the
+  // cap it at SEESAW_MAX_DISTANCE because
+  // it can be bigger than the
   // width of the seesaw
-  const distance = Math.min(Math.abs(x - center), 200);
+  const distance = Math.min(Math.abs(x - center), SEESAW_MAX_DISTANCE);
   /* if the weight was dropped further from the center, 
     it is on the right side*/
   const side = x > center ? 1 : -1;
@@ -216,8 +215,6 @@ seesaw_container.addEventListener('click', (e) => {
   nextWeight();
 });
 
-nextWeight();
-
 function handleRuler() {
   const rulerWidth = ruler.scrollWidth;
 
@@ -234,9 +231,10 @@ function handleRuler() {
   }
 }
 
-handleRuler();
-
 reset_btn.addEventListener('click', () => {
   app.reset();
   clearLogs();
 });
+
+handleRuler();
+nextWeight();
