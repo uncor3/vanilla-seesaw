@@ -11,6 +11,10 @@ const COLORS = [
 ];
 const WEIGHT_FORMAT = 'kg';
 const SEESAW_MAX_DISTANCE = 200;
+const CACHE_KEY = 'app_state';
+const DEFAULT_APP_STATE = {
+  weights: [],
+};
 
 let color = COLORS[0];
 let resetting = false;
@@ -33,6 +37,22 @@ sfx.volume = 0.1;
 
 const logs = document.getElementById('logs');
 
+function parseState() {
+  const state = localStorage.getItem(CACHE_KEY);
+  if (!state) return DEFAULT_APP_STATE;
+
+  try {
+    const data = JSON.parse(state);
+    // very basic validator as using libs is not allowed
+    // also no sanitation whatsover
+    if (typeof data == 'object' && Array.isArray(data.weights)) {
+      return data;
+    }
+  } catch (error) {
+    return DEFAULT_APP_STATE;
+  }
+}
+
 function createWeight(weight, style) {
   const div = document.createElement('div');
   div.className = 'weight';
@@ -44,7 +64,7 @@ function createWeight(weight, style) {
 function createLog(weight, side, distance) {
   const div = document.createElement('div');
   div.className = 'log';
-  div.textContent = `${weight}${WEIGHT_FORMAT} dropped on ${side} ${Math.floor(
+  div.textContent = `🪨 ${weight}${WEIGHT_FORMAT} dropped on ${side} ${Math.floor(
     distance
   )}px further from the center`;
   return div;
@@ -58,13 +78,21 @@ class App {
   constructor() {
     this.weights = [];
     this.angle = 0;
+    const prevState = parseState();
+
+    // if we had anything before
+    if (prevState.weights.length) {
+      for (const w of prevState.weights) {
+        this.addWeight(w.weight, w.side, w.distance, w.style);
+      }
+    }
   }
 
   /* -1 for left, 1 for right */
   addWeight(weight, side, distance, style) {
     const elm = createWeight(`${weight}${WEIGHT_FORMAT}`, style);
     const log = createLog(weight, side == -1 ? 'left' : 'right', distance);
-    this.weights.push({ elm, weight, side, distance });
+    this.weights.push({ weight, side, distance, style });
     seesaw.appendChild(elm);
     logs.prepend(log);
     this.computeAndUpdate();
@@ -108,6 +136,8 @@ class App {
     seesaw.style.transform = `rotate(${cappedAngle}deg)`;
 
     tilt_angle_val.textContent = `${Math.floor(cappedAngle)}°`;
+
+    this.serialize();
   }
 
   getAngle() {
@@ -116,10 +146,7 @@ class App {
 
   reset() {
     resetting = true;
-    for (const w of this.weights) {
-      seesaw.removeChild(w.elm);
-    }
-
+    seesaw.querySelectorAll('.weight').forEach((el) => el.remove());
     seesaw.style.transform = '';
     this.angle = 0;
     this.weights = [];
@@ -127,10 +154,20 @@ class App {
     right_weight_val.textContent = '0kg (0 torque)';
     tilt_angle_val.textContent = '0°';
 
+    localStorage.removeItem(CACHE_KEY);
+
     resetting = false;
   }
-}
 
+  serialize() {
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({
+        weights: this.weights,
+      })
+    );
+  }
+}
 const app = new App();
 
 seesaw_container.addEventListener('mousemove', (e) => {

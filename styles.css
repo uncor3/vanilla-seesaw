@@ -120,6 +120,7 @@
   justify-content: center;
   font-size: 0.8rem;
   animation: falldown 0.1s ease-in-out forwards;
+  user-select: none;
 }
 
 #ruler {
