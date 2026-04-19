@@ -1,5 +1,5 @@
-const BASE_WIDTH = 7.5;
-const BASE_HEIGHT = 7.5;
+const BASE_WIDTH = 7;
+const BASE_HEIGHT = 7;
 const MULTIPLIER = 1.1;
 const COLORS = [
   '#4ade80',
@@ -202,8 +202,8 @@ seesaw_container.addEventListener('mousemove', (e) => {
 
 function getWeightSizes(weight) {
   return {
-    width: Math.max(weight * MULTIPLIER * BASE_WIDTH, 25),
-    height: Math.max(weight * MULTIPLIER * BASE_HEIGHT, 25),
+    width: Math.max(weight * MULTIPLIER * BASE_WIDTH, 25) + weight,
+    height: Math.max(weight * MULTIPLIER * BASE_HEIGHT, 25) + weight,
   };
 }
 
