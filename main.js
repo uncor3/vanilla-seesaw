@@ -33,7 +33,6 @@ sfx.volume = 0.1;
 const logs = document.getElementById('logs');
 
 let color = COLORS[0];
-let resetting = false;
 let weight_to_add = 0;
 let last_distance = 0;
 let last_side = 1; // 1 for right, -1 for left
@@ -127,7 +126,6 @@ class App {
   }
 
   reset() {
-    resetting = true;
     seesaw.querySelectorAll('.weight').forEach((el) => el.remove());
     seesaw.style.transform = '';
     this.angle = 0;
@@ -138,8 +136,6 @@ class App {
     this.right_weight = 0;
     this.updateUI();
     localStorage.removeItem(CACHE_KEY);
-
-    resetting = false;
   }
 
   updateUI() {
@@ -235,7 +231,6 @@ function nextWeight() {
 }
 
 seesaw_container.addEventListener('click', (e) => {
-  if (resetting) return;
   if (sfx_toggle.checked) {
     sfx.currentTime = 0;
     sfx.play();
