@@ -29,7 +29,7 @@ const right_weight_val = document.querySelector('#right-weight .val');
 
 const sfx = document.getElementById('sfx');
 const sfx_toggle = document.getElementById('sfx-toggle');
-sfx.volume = 0.1;
+sfx.volume = 0.05;
 const logs = document.getElementById('logs');
 
 let color = COLORS[0];
