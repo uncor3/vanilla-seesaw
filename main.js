@@ -219,7 +219,7 @@ function computeStyles(weight, left) {
 }
 
 function nextWeight() {
-  const random = Math.max(Math.floor(Math.random() * 10), 1);
+  const random = Math.max(Math.round(Math.random() * 10), 1);
   weight_to_add = random;
   const text = `${random}${WEIGHT_FORMAT}`;
   preview_weight.textContent = text;
