@@ -234,7 +234,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  min-width: 60vw;
+  width: 100%;
   min-height: 100px;
   max-height: 100px;
   overflow-y: auto;
