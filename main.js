@@ -66,7 +66,7 @@ function createWeight(weight, style) {
 function createLog(weight, side, distance) {
   const div = document.createElement('div');
   div.className = 'log';
-  div.textContent = `🪨 ${weight}${WEIGHT_FORMAT} dropped on ${side} ${Math.floor(
+  div.textContent = `🪨 ${weight}${WEIGHT_FORMAT} dropped on ${side} side ${Math.floor(
     distance
   )}px further from the center`;
   return div;
